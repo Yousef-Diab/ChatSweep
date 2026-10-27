@@ -1,0 +1,65 @@
+{
+  "title": "Trip planning: Petra",
+  "create_time": 1761466500.123,
+  "update_time": 1761505331.5,
+  "current_node": "n6",
+  "conversation_id": "6720a1b2-0000-4000-8000-000000000001",
+  "mapping": {
+    "root": { "id": "root", "message": null, "parent": null, "children": ["n0"] },
+    "n0": {
+      "id": "n0",
+      "parent": "root",
+      "children": ["n1"],
+      "message": {
+        "author": { "role": "system" },
+        "content": { "content_type": "text", "parts": [""] },
+        "metadata": { "is_visually_hidden_from_conversation": true }
+      }
+    },
+    "n1": {
+      "id": "n1",
+      "parent": "n0",
+      "children": ["n2a", "n2"],
+      "message": {
+        "author": { "role": "user" },
+        "content": { "content_type": "multimodal_text", "parts": [{ "content_type": "image_asset_pointer", "asset_pointer": "file-service://x" }, "How long to walk to the Monastery?"] }
+      }
+    },
+    "n2a": {
+      "id": "n2a",
+      "parent": "n1",
+      "children": [],
+      "message": { "author": { "role": "assistant" }, "content": { "content_type": "text", "parts": ["OLD REGENERATED ANSWER"] } }
+    },
+    "n2": {
+      "id": "n2",
+      "parent": "n1",
+      "children": ["n3"],
+      "message": { "author": { "role": "assistant" }, "content": { "content_type": "thoughts", "thoughts": [] } }
+    },
+    "n3": {
+      "id": "n3",
+      "parent": "n2",
+      "children": ["n4"],
+      "message": { "author": { "role": "assistant" }, "content": { "content_type": "text", "parts": ["About **45 minutes** from the Treasury."] } }
+    },
+    "n4": {
+      "id": "n4",
+      "parent": "n3",
+      "children": ["n5"],
+      "message": { "author": { "role": "tool", "name": "python" }, "content": { "content_type": "execution_output", "text": "42" } }
+    },
+    "n5": {
+      "id": "n5",
+      "parent": "n4",
+      "children": ["n6"],
+      "message": { "author": { "role": "user" }, "content": { "content_type": "text", "parts": ["Show me as code"] } }
+    },
+    "n6": {
+      "id": "n6",
+      "parent": "n5",
+      "children": [],
+      "message": { "author": { "role": "assistant" }, "content": { "content_type": "code", "language": "python", "text": "print('walk')" } }
+    }
+  }
+}
