@@ -1,7 +1,7 @@
 {
   "name": "chatsweep",
-  "version": "0.2.0",
-  "description": "Rule-based cleanup for your AI chat history (ChatGPT first, Claude next). Archive or delete old chats while keeping the ones you care about.",
+  "version": "0.3.0",
+  "description": "Rule-based cleanup for your AI chat history (ChatGPT and Claude). Archive or delete old chats while keeping the ones you care about.",
   "license": "MIT",
   "private": true,
   "type": "module",
@@ -17,6 +17,7 @@
     "test:watch": "vitest",
     "e2e": "wxt build && playwright test",
     "icons": "python scripts/make-icons.py",
+    "store:assets": "node scripts/store-assets.mjs",
     "postinstall": "wxt prepare"
   },
   "dependencies": {
