@@ -1,0 +1,11 @@
+node_modules/
+.output/
+.wxt/
+stats.html
+test-results/
+playwright-report/
+*.log
+.DS_Store
+web-ext.config.ts
+# spike captures may contain personal chat titles — never commit raw ones
+spike/raw/

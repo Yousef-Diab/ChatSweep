@@ -1,0 +1,40 @@
+{
+  "name": "chatsweep",
+  "version": "0.2.0",
+  "description": "Rule-based cleanup for your AI chat history (ChatGPT first, Claude next). Archive or delete old chats while keeping the ones you care about.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "zip": "wxt zip",
+    "build:firefox": "wxt build -b firefox",
+    "zip:firefox": "wxt zip -b firefox",
+    "lint:firefox": "wxt build -b firefox && web-ext lint --source-dir .output/firefox-mv3",
+    "compile": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "wxt build && playwright test",
+    "icons": "python scripts/make-icons.py",
+    "postinstall": "wxt prepare"
+  },
+  "dependencies": {
+    "fflate": "^0.8.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@wxt-dev/module-react": "^1.2.2",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.9.3",
+    "vitest": "^5.0.5",
+    "web-ext": "^10.8.0",
+    "wxt": "^0.21.5"
+  }
+}
