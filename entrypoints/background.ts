@@ -1,11 +1,12 @@
 import { browser } from 'wxt/browser';
 import { defineBackground } from 'wxt/utils/define-background';
-import { alarmName, badgeFor, periodMinutes, type PendingReview } from '../src/core/schedule';
+import { alarmName, badgeForAll, periodMinutes } from '../src/core/schedule';
+import type { ProviderId } from '../src/core/types';
 import { JobController } from '../src/jobs/controller';
 import type { Job } from '../src/jobs/runner';
 import { runScheduledCheck } from '../src/jobs/scheduler';
 import { listen, sendToTab, type BackgroundRequest } from '../src/messaging';
-import { effectiveAction, PROVIDERS } from '../src/providers/registry';
+import { effectiveAction, PROVIDER_LIST, PROVIDERS } from '../src/providers/registry';
 import { ProviderError } from '../src/providers/types';
 import {
   actionPrefItem,
@@ -55,10 +56,6 @@ export default defineBackground(() => {
     if (sidebar) browser.action.onClicked.addListener(() => void sidebar.toggle());
   }
 
-  const provider = PROVIDERS.chatgpt;
-  const schedule = scheduleItem(provider.id);
-  const pending = pendingItem(provider.id);
-
   const controller = new JobController({
     load: () => jobItem.getValue(),
     store: (job) => jobItem.setValue(job),
@@ -81,8 +78,10 @@ export default defineBackground(() => {
   void controller.recover();
 
   // ---- Scheduled checks: queue + notify only. They never sweep. ---------------------------
-  const checkNow = () =>
-    runScheduledCheck(provider.id, {
+  // One alarm per provider; the toolbar badge sums every provider's pending review.
+  const checkNow = (providerId: ProviderId) => {
+    const provider = PROVIDERS[providerId];
+    return runScheduledCheck(provider.id, {
       findTab: async () => (await browser.tabs.query({ url: provider.tabPattern }))[0]?.id ?? null,
       list: (tabId) => sendToTab(tabId, { target: 'content', type: 'list' }),
       loadRules: async () => normalizeRules(await rulesItem(provider.id).getValue()),
@@ -93,14 +92,15 @@ export default defineBackground(() => {
         const prev = await item.getValue();
         await item.setValue({ fetchedAt, accountLabel: prev?.accountLabel, chats });
       },
-      savePending: (p) => pending.setValue(p),
+      savePending: (p) => pendingItem(provider.id).setValue(p),
       jobRunning: () => controller.isRunning,
       now: () => Date.now(),
     });
+  };
 
-  async function syncAlarm() {
-    const s = await schedule.getValue();
-    const name = alarmName(provider.id);
+  async function syncAlarm(providerId: ProviderId) {
+    const s = await scheduleItem(providerId).getValue();
+    const name = alarmName(providerId);
     if (!s.enabled) {
       await browser.alarms.clear(name);
       return;
@@ -112,20 +112,24 @@ export default defineBackground(() => {
     }
   }
 
-  async function updateBadge(p: PendingReview | null) {
-    const badge = badgeFor(p);
+  async function updateBadge() {
+    const all = await Promise.all(PROVIDER_LIST.map((p) => pendingItem(p.id).getValue()));
+    const badge = badgeForAll(all);
     await browser.action.setBadgeBackgroundColor({ color: badge.color });
     await browser.action.setBadgeText({ text: badge.text });
   }
 
   // Listeners must be registered synchronously so a sleeping worker is woken for them.
   browser.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name === alarmName(provider.id)) void checkNow();
+    const match = PROVIDER_LIST.find((p) => alarm.name === alarmName(p.id));
+    if (match) void checkNow(match.id);
   });
-  schedule.watch(() => void syncAlarm());
-  pending.watch((p) => void updateBadge(p));
-  void syncAlarm();
-  void pending.getValue().then(updateBadge);
+  for (const p of PROVIDER_LIST) {
+    scheduleItem(p.id).watch(() => void syncAlarm(p.id));
+    pendingItem(p.id).watch(() => void updateBadge());
+    void syncAlarm(p.id);
+  }
+  void updateBadge();
 
   // ---- Messages from the side panel -----------------------------------------------------
   listen<BackgroundRequest>('background', async (msg) => {
@@ -151,7 +155,7 @@ export default defineBackground(() => {
       case 'job:dismiss':
         return controller.dismiss();
       case 'schedule:check-now':
-        return checkNow();
+        return checkNow(msg.provider);
     }
   });
 });

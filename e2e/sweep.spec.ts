@@ -115,6 +115,8 @@ test('rules → preview → archive sweep → delete sweep, end to end', async (
 
     const panel = await context.newPage();
     await panel.goto(`chrome-extension://${extensionId}/sidepanel.html`);
+    // First run: the data-use notice must be accepted before anything talks to the provider.
+    await panel.getByRole('button', { name: 'I agree, continue' }).click();
 
     // Connection through the content script, using the mocked session.
     await expect(panel.getByText('tester@example.com')).toBeVisible({ timeout: 15_000 });

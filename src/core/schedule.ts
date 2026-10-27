@@ -40,3 +40,14 @@ export function badgeFor(pending: PendingReview | null | undefined): { text: str
   }
   return { text: '!', color: '#d97706' };
 }
+
+/**
+ * One toolbar badge for every provider's pending review: the total count of chats awaiting
+ * review wins; otherwise "!" if any provider's check couldn't run.
+ */
+export function badgeForAll(pendings: ReadonlyArray<PendingReview | null | undefined>): { text: string; color: string } {
+  const count = pendings.reduce((n, p) => n + (p?.status === 'ready' ? Math.max(0, p.count) : 0), 0);
+  if (count > 0) return badgeFor({ provider: 'chatgpt', status: 'ready', checkedAt: 0, count, action: 'archive' });
+  const problem = pendings.find((p) => p && p.status !== 'ready');
+  return badgeFor(problem ?? null);
+}

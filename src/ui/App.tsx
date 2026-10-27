@@ -4,14 +4,17 @@ import { validateRules } from '../core/rules';
 import type { Overrides, SweepAction, Verdict } from '../core/types';
 import { isActive, type Job } from '../jobs/runner';
 import { onUiEvent, sendToBackground, sendToTab, type BackgroundRequest } from '../messaging';
-import { effectiveAction, PROVIDERS } from '../providers/registry';
+import { effectiveAction, PROVIDER_LIST, PROVIDERS, type ProviderInfo } from '../providers/registry';
 import { toErrorInfo } from '../providers/types';
 import {
   actionPrefItem,
   chatsItem,
+  consentItem,
+  DATA_NOTICE_VERSION,
   jobItem,
   normalizeRules,
   overridesItem,
+  panelProviderItem,
   pendingItem,
   presetsItem,
   rulesItem,
@@ -20,6 +23,7 @@ import {
 import { backupFolderName, buildBackupZip, fetchForBackup } from '../backup/archive';
 import { DEFAULT_SCHEDULE } from '../core/schedule';
 import { ConnectionCard, type SessionState } from './components/ConnectionCard';
+import { ConsentCard } from './components/ConsentCard';
 import { JobCard } from './components/JobCard';
 import { PresetPicker } from './components/PresetPicker';
 import { PreviewCard } from './components/PreviewCard';
@@ -30,17 +34,46 @@ import { downloadBytes } from './download';
 import { nf, relativeTime } from './format';
 import { useProviderTab, useStorageItem } from './hooks';
 
-const provider = PROVIDERS.chatgpt;
-// Storage items are created once: hooks subscribe by identity.
-const RULES = rulesItem(provider.id);
-const OVERRIDES = overridesItem(provider.id);
-const CHATS = chatsItem(provider.id);
-const ACTION = actionPrefItem(provider.id);
-const PRESETS = presetsItem(provider.id);
-const SCHEDULE = scheduleItem(provider.id);
-const PENDING = pendingItem(provider.id);
+/** Storage items per provider, created once: hooks subscribe by identity. */
+const itemsFor = (() => {
+  const cache = new Map<ProviderInfo['id'], ReturnType<typeof makeItems>>();
+  function makeItems(id: ProviderInfo['id']) {
+    return {
+      RULES: rulesItem(id),
+      OVERRIDES: overridesItem(id),
+      CHATS: chatsItem(id),
+      ACTION: actionPrefItem(id),
+      PRESETS: presetsItem(id),
+      SCHEDULE: scheduleItem(id),
+      PENDING: pendingItem(id),
+    };
+  }
+  return (id: ProviderInfo['id']) => {
+    if (!cache.has(id)) cache.set(id, makeItems(id));
+    return cache.get(id)!;
+  };
+})();
 
 export function App() {
+  const [selected, setSelected] = useStorageItem(panelProviderItem);
+  const [consent, setConsent] = useStorageItem(consentItem);
+  if (selected === undefined || consent === undefined) return null; // first storage read; avoids a flash
+  if (consent < DATA_NOTICE_VERSION) {
+    // Nothing (not even the session check) talks to a provider before the user has agreed.
+    return (
+      <main className="mx-auto max-w-xl space-y-3 p-3">
+        <h1 className="text-base font-bold tracking-tight">🧹 ChatSweep</h1>
+        <ConsentCard onAgree={() => void setConsent(DATA_NOTICE_VERSION)} />
+      </main>
+    );
+  }
+  const provider = PROVIDERS[selected]?.available ? PROVIDERS[selected] : PROVIDERS.chatgpt;
+  // Keyed: switching provider remounts the view, so no state leaks between providers.
+  return <ProviderView key={provider.id} provider={provider} onSwitch={(id) => void setSelected(id)} />;
+}
+
+function ProviderView({ provider, onSwitch }: { provider: ProviderInfo; onSwitch: (id: ProviderInfo['id']) => void }) {
+  const { RULES, OVERRIDES, CHATS, ACTION, PRESETS, SCHEDULE, PENDING } = itemsFor(provider.id);
   const { tab, refresh: refreshTab } = useProviderTab(provider);
   const [storedRules, setRules] = useStorageItem(RULES);
   const [overridesRaw, setOverrides] = useStorageItem(OVERRIDES);
@@ -195,12 +228,27 @@ export function App() {
 
   return (
     <main className="mx-auto max-w-xl space-y-3 p-3">
-      <header className="flex items-center justify-between">
-        <h1 className="text-base font-bold tracking-tight">
-          🧹 ChatSweep <span className="font-normal text-zinc-500">· {provider.displayName}</span>
-        </h1>
+      <header className="flex items-center justify-between gap-2">
+        <h1 className="text-base font-bold tracking-tight">🧹 ChatSweep</h1>
         <span className="text-[11px] text-zinc-500">local-only · no tracking</span>
       </header>
+
+      <nav className="flex gap-1 rounded-lg bg-zinc-200/70 p-0.5 dark:bg-zinc-800" aria-label="Provider">
+        {PROVIDER_LIST.map((p) => (
+          <button
+            key={p.id}
+            className={`flex-1 rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+              p.id === provider.id
+                ? 'bg-white shadow-sm dark:bg-zinc-950'
+                : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
+            }`}
+            aria-pressed={p.id === provider.id}
+            onClick={() => onSwitch(p.id)}
+          >
+            {p.displayName}
+          </button>
+        ))}
+      </nav>
 
       <ConnectionCard
         provider={provider}
@@ -215,6 +263,7 @@ export function App() {
       {job && (
         <JobCard
           job={job as Job}
+          otherProviderName={job.provider !== provider.id ? PROVIDERS[job.provider].displayName : undefined}
           onPause={() => bg({ target: 'background', type: 'job:pause' })}
           onResume={() => bg({ target: 'background', type: 'job:resume' })}
           onCancel={() => bg({ target: 'background', type: 'job:cancel' })}
@@ -270,6 +319,7 @@ export function App() {
       />
 
       <ScheduleCard
+        provider={provider}
         schedule={schedule ?? DEFAULT_SCHEDULE}
         onChange={(s) => void setSchedule(s)}
         checking={checking}

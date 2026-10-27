@@ -8,7 +8,7 @@
  * and on the clipboard.
  */
 (async () => {
-  const report = { probe: 'claude', probeVersion: 1, ranAt: new Date().toISOString(), steps: {} };
+  const report = { probe: 'claude', probeVersion: 2, ranAt: new Date().toISOString(), steps: {} };
   const shapeOf = (v) => (v === null ? 'null' : Array.isArray(v) ? 'array' : typeof v);
   const TIME_KEYS = /(_at|_time)$/;
   const safe = (k, v) => {
@@ -64,7 +64,10 @@
       received: items.length,
       keyTypes: keyTypes(items),
       starredCount: items.filter((i) => i.is_starred === true).length,
-      inProjectCount: items.filter((i) => typeof i.project_uuid === 'string' && i.project_uuid).length,
+      inProjectCount: items.filter((i) => (typeof i.project_uuid === 'string' && i.project_uuid) || (i.project && typeof i.project === 'object')).length,
+      projectKeys: [...new Set(items.flatMap((i) => (i.project && typeof i.project === 'object' ? Object.keys(i.project) : [])))],
+      archivedCount: items.filter((i) => i.is_archived === true).length,
+      temporaryCount: items.filter((i) => i.is_temporary === true).length,
       archiveLikeFields: Object.keys(keyTypes(items)).filter((k) => /archiv|hidden|visible|temporary/i.test(k)),
       orderedByUpdateDesc: items.every(
         (it, i) => i === 0 || Date.parse(items[i - 1].updated_at) >= Date.parse(it.updated_at),

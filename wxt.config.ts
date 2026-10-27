@@ -17,7 +17,7 @@ export default defineConfig({
     // alarms: scheduled checks (which only queue chats for review; they never sweep on their own).
     // sidePanel is Chromium-only; on Firefox WXT turns the sidepanel entrypoint into a sidebar_action.
     permissions: browser === 'firefox' ? ['storage', 'alarms'] : ['storage', 'sidePanel', 'alarms'],
-    host_permissions: ['https://chatgpt.com/*'],
+    host_permissions: ['https://chatgpt.com/*', 'https://claude.ai/*'],
     action: {
       default_title: 'Open ChatSweep',
     },

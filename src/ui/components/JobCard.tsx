@@ -11,13 +11,15 @@ const STATUS_TEXT: Record<Job['status'], string> = {
 
 export function JobCard(props: {
   job: Job;
+  /** Set when the job belongs to a different provider than the one on screen. */
+  otherProviderName?: string;
   onPause: () => void;
   onResume: () => void;
   onCancel: () => void;
   onRetry: () => void;
   onDismiss: () => void;
 }) {
-  const { job, onPause, onResume, onCancel, onRetry, onDismiss } = props;
+  const { job, otherProviderName, onPause, onResume, onCancel, onRetry, onDismiss } = props;
   const c = countJob(job);
   const pct = c.total ? Math.round(((c.done + c.failed) / c.total) * 100) : 100;
   const failed = job.items.filter((i) => i.status === 'failed');
@@ -27,7 +29,10 @@ export function JobCard(props: {
   return (
     <section className="card space-y-2 border-brand-500/40">
       <div className="flex items-baseline justify-between">
-        <h2 className="font-semibold">{STATUS_TEXT[job.status]}</h2>
+        <h2 className="font-semibold">
+          {STATUS_TEXT[job.status]}
+          {otherProviderName && <span className="font-normal text-zinc-500"> · {otherProviderName}</span>}
+        </h2>
         <span className="label">
           {nf.format(c.done)} {verbPast}
           {c.failed > 0 && ` · ${nf.format(c.failed)} failed`} · {nf.format(c.total)} total

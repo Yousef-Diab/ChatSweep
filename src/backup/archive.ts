@@ -12,6 +12,7 @@ import type { ChatMeta, ProviderId } from '../core/types';
 import { backoffMs, DEFAULT_RUNNER_OPTIONS } from '../jobs/runner';
 import { toErrorInfo } from '../providers/types';
 import { chatGptToMarkdown, type RawConversation } from './chatgptMarkdown';
+import { claudeToMarkdown, type ClaudeRawConversation } from './claudeMarkdown';
 
 export interface BackupEntry {
   chat: ChatMeta;
@@ -34,6 +35,8 @@ export function toMarkdown(provider: ProviderId, entry: BackupEntry): string {
   switch (provider) {
     case 'chatgpt':
       return chatGptToMarkdown(entry.raw as RawConversation, entry.chat.id);
+    case 'claude':
+      return claudeToMarkdown(entry.raw as ClaudeRawConversation, entry.chat.id);
     default:
       return `# ${entry.chat.title}\n\n(Markdown export not available for ${provider}; see the JSON file.)\n`;
   }

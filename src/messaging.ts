@@ -89,7 +89,7 @@ export async function sendToTab<K extends ContentRequest['type']>(
   } catch (err) {
     const text = (err as Error)?.message ?? String(err);
     if (NOT_INJECTED.test(text)) {
-      throw new ProviderError('no-tab', 'ChatSweep is not active in that tab yet. Reload the ChatGPT tab.');
+      throw new ProviderError('no-tab', 'ChatSweep is not active in that tab yet. Reload the tab.');
     }
     throw new ProviderError('unknown', text);
   }

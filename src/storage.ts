@@ -40,6 +40,16 @@ export const scheduleItem = (p: ProviderId) =>
 export const pendingItem = (p: ProviderId) =>
   storage.defineItem<PendingReview | null>(`local:pending:${p}`, { fallback: null });
 
+/**
+ * Version of the data-use notice the user agreed to (0 = not yet). Bump DATA_NOTICE_VERSION when
+ * what ChatSweep reads or stores changes: the store policy requires re-disclosing changes.
+ */
+export const DATA_NOTICE_VERSION = 1;
+export const consentItem = storage.defineItem<number>('local:consent', { fallback: 0 });
+
+/** Which provider the side panel shows. */
+export const panelProviderItem = storage.defineItem<ProviderId>('local:ui:provider', { fallback: 'chatgpt' });
+
 /** Older stored rule sets may miss newer fields; fill them from the defaults. */
 export function normalizeRules(stored: Partial<RuleSet> | null | undefined): RuleSet {
   return { ...DEFAULT_RULES, ...(stored ?? {}) };

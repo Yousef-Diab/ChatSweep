@@ -25,9 +25,11 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     origin: 'https://claude.ai',
     tabPattern: 'https://claude.ai/*',
     capabilities: { archive: false, star: true, projects: true, assistants: false },
-    available: false, // planned for v0.3
+    available: true,
   },
 };
+
+export const PROVIDER_LIST: readonly ProviderInfo[] = Object.values(PROVIDERS).filter((p) => p.available);
 
 /** Decision #1: archive by default wherever the provider supports it. */
 export function defaultAction(p: ProviderInfo): SweepAction {

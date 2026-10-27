@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { alarmName, badgeFor, countSweepable, periodMinutes } from '../../src/core/schedule';
+import { alarmName, badgeFor, badgeForAll, countSweepable, periodMinutes } from '../../src/core/schedule';
 import { DEFAULT_RULES } from '../../src/core/types';
 import { NOW, chat } from '../helpers';
 
@@ -26,5 +26,17 @@ describe('schedule helpers', () => {
     expect(badgeFor({ provider: 'chatgpt', status: 'ready', checkedAt: 0, count: 5000, action: 'archive' }).text).toBe('999+');
     expect(badgeFor({ provider: 'chatgpt', status: 'needs-tab', checkedAt: 0 }).text).toBe('!');
     expect(badgeFor({ provider: 'chatgpt', status: 'error', checkedAt: 0, message: 'x' }).text).toBe('!');
+  });
+
+  it('combined badge sums counts across providers, else flags any problem', () => {
+    const ready = (provider: 'chatgpt' | 'claude', count: number) =>
+      ({ provider, status: 'ready', checkedAt: 0, count, action: 'delete' }) as const;
+    expect(badgeForAll([]).text).toBe('');
+    expect(badgeForAll([null, undefined]).text).toBe('');
+    expect(badgeForAll([ready('chatgpt', 3), ready('claude', 4)]).text).toBe('7');
+    expect(badgeForAll([ready('chatgpt', 600), ready('claude', 600)]).text).toBe('999+');
+    expect(badgeForAll([ready('chatgpt', 0), { provider: 'claude', status: 'needs-tab', checkedAt: 0 }]).text).toBe('!');
+    // A count is more useful than "!", so it wins.
+    expect(badgeForAll([ready('chatgpt', 2), { provider: 'claude', status: 'error', checkedAt: 0, message: 'x' }]).text).toBe('2');
   });
 });

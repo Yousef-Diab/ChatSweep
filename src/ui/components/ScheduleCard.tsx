@@ -3,13 +3,14 @@ import type { ProviderInfo } from '../../providers/registry';
 import { plural, relativeTime } from '../format';
 
 export function ScheduleCard(props: {
+  provider: ProviderInfo;
   schedule: Schedule;
   onChange: (s: Schedule) => void;
   onCheckNow: () => void;
   checking: boolean;
   canCheck: boolean;
 }) {
-  const { schedule, onChange, onCheckNow, checking, canCheck } = props;
+  const { provider, schedule, onChange, onCheckNow, checking, canCheck } = props;
   return (
     <section className="card space-y-2">
       <div className="flex items-center justify-between">
@@ -41,7 +42,7 @@ export function ScheduleCard(props: {
       </label>
       <p className="label">
         ChatSweep never sweeps on its own. A check only counts the chats your rules would sweep, shows the number on the
-        toolbar icon, and waits for you to confirm. A ChatGPT tab must be open when the check runs.
+        toolbar icon, and waits for you to confirm. A {provider.displayName} tab must be open when the check runs.
       </p>
     </section>
   );

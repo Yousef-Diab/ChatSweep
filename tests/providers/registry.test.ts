@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { defaultAction, effectiveAction, PROVIDERS } from '../../src/providers/registry';
+import { defaultAction, effectiveAction, PROVIDER_LIST, PROVIDERS } from '../../src/providers/registry';
 
 describe('default action', () => {
   it('archives where the provider supports it, deletes otherwise', () => {
@@ -11,5 +11,9 @@ describe('default action', () => {
     expect(effectiveAction(PROVIDERS.chatgpt, 'delete')).toBe('delete');
     expect(effectiveAction(PROVIDERS.chatgpt, null)).toBe('archive');
     expect(effectiveAction(PROVIDERS.claude, 'archive')).toBe('delete');
+  });
+
+  it('lists ChatGPT and Claude as available providers', () => {
+    expect(PROVIDER_LIST.map((p) => p.id)).toEqual(['chatgpt', 'claude']);
   });
 });

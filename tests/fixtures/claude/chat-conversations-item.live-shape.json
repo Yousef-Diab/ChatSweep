@@ -1,0 +1,18 @@
+{
+  "_note": "Exact key set and value types from a live account (spike/results/2026-10-27-claude-probe.json). Ids, names and text are synthetic.",
+  "created_at": "2026-10-26T12:04:35.963037Z",
+  "current_leaf_message_uuid": "0b1c0000-0000-4000-8000-00000000leaf",
+  "is_archived": false,
+  "is_multiplayer": false,
+  "is_starred": false,
+  "is_temporary": false,
+  "model": "claude-synthetic",
+  "name": "Synthetic title for live-shape test",
+  "platform": "CLAUDE_AI",
+  "project": null,
+  "settings": {},
+  "summary": "Synthetic summary.",
+  "updated_at": "2026-10-26T12:15:57.511864Z",
+  "uuid": "0b1c0000-0000-4000-8000-00000000live",
+  "workspace_upgraded": false
+}

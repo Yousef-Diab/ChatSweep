@@ -14,13 +14,15 @@
  */
 import type { ChatMeta, ProviderCapabilities, SweepAction } from '../core/types';
 import { ProviderError, type ListProgress, type Provider, type SessionInfo } from './types';
+import { pageFetch, parseRetryAfter, realSleep, toIso, type FetchLike } from './shared';
+
+// Re-exported for existing importers (backup renderer, tests).
+export { pageFetch, parseRetryAfter, toIso };
 
 export const CHATGPT_ORIGIN = 'https://chatgpt.com';
 const PAGE_SIZE = 100;
 const PAGE_DELAY_MS = 350;
 const MAX_PAGES = 2_000; // 200k chats — a guard against pagination loops, not a real limit
-
-type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
 export interface ChatGptRawItem {
   id?: unknown;
@@ -33,21 +35,6 @@ export interface ChatGptRawItem {
   is_starred?: unknown;
   pinned_time?: unknown;
   is_pinned?: unknown;
-}
-
-/** Accepts ISO strings, epoch seconds (float) or epoch milliseconds. Returns ISO or '' if unusable. */
-export function toIso(value: unknown): string {
-  if (typeof value === 'string' && value.trim()) {
-    const asNumber = Number(value);
-    if (Number.isFinite(asNumber)) return toIso(asNumber);
-    const t = Date.parse(value);
-    return Number.isNaN(t) ? '' : new Date(t).toISOString();
-  }
-  if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
-    const ms = value < 1e11 ? value * 1000 : value; // seconds vs milliseconds
-    return new Date(ms).toISOString();
-  }
-  return '';
 }
 
 /** Pure mapping from a raw list item to ChatMeta. Returns null for items without an id. */
@@ -74,27 +61,6 @@ export function mapChatGptItem(raw: ChatGptRawItem): ChatMeta | null {
   };
 }
 
-export function parseRetryAfter(header: string | null, nowMs = Date.now()): number | null {
-  if (!header) return null;
-  const seconds = Number(header);
-  if (Number.isFinite(seconds)) return Math.max(0, seconds * 1000);
-  const at = Date.parse(header);
-  return Number.isNaN(at) ? null : Math.max(0, at - nowMs);
-}
-
-/**
- * In Chromium, a content script's fetch already runs as the page (same origin, page cookies).
- * In Firefox it runs with the extension's principal; `content.fetch` is the page-context variant.
- */
-export function pageFetch(scope: unknown = globalThis): FetchLike {
-  const firefoxContent = (scope as { content?: { fetch?: typeof fetch } }).content;
-  if (firefoxContent && typeof firefoxContent.fetch === 'function') {
-    const f = firefoxContent.fetch;
-    return (input, init) => f.call(firefoxContent, input, init);
-  }
-  return (input, init) => fetch(input, init);
-}
-
 export interface ChatGptOptions {
   fetch?: FetchLike;
   sleep?: (ms: number) => Promise<void>;
@@ -114,7 +80,7 @@ export class ChatGptProvider implements Provider {
 
   constructor(opts: ChatGptOptions = {}) {
     this.fetchImpl = opts.fetch ?? pageFetch();
-    this.sleep = opts.sleep ?? ((ms) => new Promise((r) => setTimeout(r, ms)));
+    this.sleep = opts.sleep ?? realSleep;
     this.origin = opts.origin ?? CHATGPT_ORIGIN;
   }
 
