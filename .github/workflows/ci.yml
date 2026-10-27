@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Type-check
+        run: npm run compile
+      - name: Unit tests
+        run: npm test
+      - name: Install Chromium for e2e
+        run: npx playwright install --with-deps chromium
+      - name: E2E (built extension vs. mocked chatgpt.com)
+        run: npm run e2e
+      - name: Firefox build + web-ext lint
+        run: npm run lint:firefox
+      - name: Package
+        run: |
+          npm run zip
+          npm run zip:firefox
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chatsweep-builds
+          path: .output/*.zip
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-results
+          path: test-results/
