@@ -1,0 +1,50 @@
+@import 'tailwindcss';
+@source '../../src';
+
+@theme {
+  --color-brand-50: oklch(0.97 0.03 175);
+  --color-brand-100: oklch(0.93 0.06 175);
+  --color-brand-500: oklch(0.65 0.13 175);
+  --color-brand-600: oklch(0.57 0.12 175);
+  --color-brand-700: oklch(0.49 0.1 175);
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  @apply bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  font-size: 13px;
+}
+
+/* Usage: className="btn btn-primary" */
+@layer components {
+  .card {
+    @apply rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900;
+  }
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg px-3 py-1.5 font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-brand-600 text-white hover:bg-brand-700;
+  }
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700;
+  }
+  .btn-ghost {
+    @apply border border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800;
+  }
+  .input {
+    @apply w-full rounded-lg border border-zinc-300 bg-white px-2 py-1 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:border-zinc-700 dark:bg-zinc-950;
+  }
+  .label {
+    @apply text-xs font-medium text-zinc-600 dark:text-zinc-400;
+  }
+}

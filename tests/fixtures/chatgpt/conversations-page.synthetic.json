@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "id": "6720a1b2-0000-4000-8000-000000000001",
+      "title": "Trip planning: Petra",
+      "create_time": "2026-10-20T08:15:00.000000Z",
+      "update_time": "2026-10-26T19:02:11.123456Z",
+      "mapping": null,
+      "current_node": null,
+      "conversation_template_id": null,
+      "gizmo_id": null,
+      "is_archived": false,
+      "is_starred": null,
+      "workspace_id": null
+    },
+    {
+      "id": "6720a1b2-0000-4000-8000-000000000002",
+      "title": "Invoice wording",
+      "create_time": 1760000000.5,
+      "update_time": 1760100000.25,
+      "gizmo_id": "g-abc123",
+      "is_archived": false
+    },
+    {
+      "id": "6720a1b2-0000-4000-8000-000000000003",
+      "title": "",
+      "create_time": "2025-01-02T03:04:05Z",
+      "update_time": null,
+      "gizmo_id": "g-p-68aa0000000000000000000000000000",
+      "is_archived": false
+    }
+  ],
+  "total": 3,
+  "limit": 100,
+  "offset": 0,
+  "has_missing_conversations": false
+}
