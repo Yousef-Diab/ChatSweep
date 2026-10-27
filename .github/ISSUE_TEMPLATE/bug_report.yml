@@ -1,0 +1,44 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please don't paste chat titles, message text, account emails or tokens here.
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Provider
+      options: [ChatGPT, Claude, Both]
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 156 / Firefox 145 / Edge …
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: ChatSweep version
+      placeholder: 0.3.0
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+      description: Include any error message shown in the side panel.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+  - type: textarea
+    id: probe
+    attributes:
+      label: Probe report (optional)
+      description: If the panel says the site may have changed, run the matching script in `spike/` and paste its redacted report.
+      render: json

@@ -1,0 +1,14 @@
+name: Feature or rule idea
+description: Suggest a new keep rule, provider or improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like ChatSweep to do?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why? What problem does it solve for you?

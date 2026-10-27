@@ -1,8 +1,13 @@
 # 🧹 ChatSweep
 
+[![CI](https://github.com/Yousef-Diab/ChatSweep/actions/workflows/ci.yml/badge.svg)](https://github.com/Yousef-Diab/ChatSweep/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-teal.svg)](LICENSE)
+
 **Rule-based cleanup for your AI chat history.** Keep the chats that matter, and archive or delete the rest in one pass.
 
-ChatGPT is supported and verified on a live account. Both are verified on live accounts. Others will follow.
+Works with **ChatGPT** (chatgpt.com) and **Claude** (claude.ai), in Chrome, Edge, Brave, Arc and Firefox. Both are verified on live accounts. More providers may follow.
+
+![ChatSweep preview: every chat shows why it is kept or swept](store/screenshots/2-preview.png)
 
 Most bulk-delete tools have you tick checkboxes one chat at a time. ChatSweep instead applies a **retention policy**:
 
@@ -127,6 +132,12 @@ Contributors picking up the work: start with [HANDOFF.md](HANDOFF.md) (status, d
 ## Roadmap
 
 See [PLAN.md](PLAN.md). Next up: Chrome Web Store and AMO listings.
+
+## Contributing
+
+Bug reports, rule ideas and PRs are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md). Security issues: [SECURITY.md](SECURITY.md).
+
+ChatSweep is an independent project, not affiliated with OpenAI or Anthropic.
 
 ## License
 

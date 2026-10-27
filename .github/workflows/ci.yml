@@ -33,6 +33,7 @@ jobs:
         with:
           name: chatsweep-builds
           path: .output/*.zip
+          include-hidden-files: true
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
