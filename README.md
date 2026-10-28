@@ -7,7 +7,7 @@
 
 Works with **ChatGPT** (chatgpt.com) and **Claude** (claude.ai), in Chrome, Edge, Brave, Arc and Firefox. Both are verified on live accounts. More providers may follow.
 
-![ChatSweep preview: every chat shows why it is kept or swept](store/screenshots/2-preview.png)
+![ChatSweep preview: every chat shows why it is kept or swept](docs/preview.png)
 
 Most bulk-delete tools have you tick checkboxes one chat at a time. ChatSweep instead applies a **retention policy**:
 
@@ -74,7 +74,7 @@ The access token lives only in the content script's memory. It is never stored, 
 Claude has no archive, so the only action there is **Delete**, with the backup on by default and a typed confirmation.
 Starred chats and chats in Projects are protected by default, the same as pinned and Project chats on ChatGPT.
 
-Verified live: the read endpoints (`spike/results/2026-10-27-claude-probe.json`) and a delete with backup.
+Verified live: the read endpoints and a delete with backup.
 
 > ⚠️ These endpoints are **unofficial** and can change without notice. If ChatGPT changes them, ChatSweep stops working
 > and shows an error; it does not guess. "Delete" hides the chat from your account the same way ChatGPT's own delete
@@ -104,7 +104,7 @@ npm run compile    # type-check
 npm run lint:firefox  # Firefox build + Mozilla's web-ext lint
 npm run zip && npm run zip:firefox   # store packages in .output/
 npm run icons      # regenerate public/icon/*.png
-npm run store:assets  # store screenshots + promo tile into store/ (listing copy: store/LISTING.md)
+npm run store:assets  # renders store screenshots + promo tile into store/ (git-ignored)
 ```
 
 Project layout:
@@ -127,11 +127,13 @@ spike/         read-only probes for checking the live ChatGPT and Claude APIs
 of the real response shapes (field names and types, page size, whether Project chats show up in the main list).
 Run it whenever ChatSweep breaks, or before a release. `spike/claude-probe.js` does the same on claude.ai.
 
-Contributors picking up the work: start with [HANDOFF.md](HANDOFF.md) (status, decisions, next steps, gotchas).
+Contributors: start with [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Roadmap
 
-See [PLAN.md](PLAN.md). Next up: Chrome Web Store and AMO listings.
+- Chrome Web Store and Firefox Add-ons listings
+- More providers (Gemini, Perplexity, …)
+- Smarter rules, e.g. sweep one-message or untitled "New chat" sessions
 
 ## Contributing
 

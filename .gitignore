@@ -9,3 +9,10 @@ playwright-report/
 web-ext.config.ts
 # spike captures may contain personal chat titles — never commit raw ones
 spike/raw/
+# Private: working notes, store listing / marketing copy, and live-account probe results.
+# Kept locally only; the repo is public.
+HANDOFF.md
+PLAN.md
+IDEA.md
+store/
+spike/results/

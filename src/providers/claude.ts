@@ -12,7 +12,7 @@
  * runner owns pacing); the bulk `delete_many` endpoint is deliberately not used, so one bad
  * chat can never fail a whole batch.
  *
- * STATUS: read side checked against a live account (spike/results/2026-10-27-claude-probe.json):
+ * STATUS: read side checked against a live account with spike/claude-probe.js (2026-10-27):
  * organizations, list shape and order, and the conversation tree all match. Not yet seen live:
  * paging past 100 chats, a starred chat, a chat in a Project, and a real DELETE.
  */

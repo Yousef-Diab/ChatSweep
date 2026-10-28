@@ -1,7 +1,7 @@
 /**
  * End-to-end for Claude: the real built extension in real Chromium, with claude.ai mocked at the
  * network layer. Switch provider → connect → load → rules → delete (typed confirm + backup).
- * The mock follows the live shapes from spike/results/2026-10-27-claude-probe.json.
+ * The mock follows the live shapes reported by spike/claude-probe.js (2026-10-27).
  */
 import { chromium, expect, test, type BrowserContext, type Route } from '@playwright/test';
 import { strFromU8, unzipSync } from 'fflate';

@@ -29,7 +29,7 @@ npm run compile && npm test && npm run e2e && npm run lint:firefox
 
 ## Adding a provider
 
-See the checklist in [HANDOFF.md](HANDOFF.md) and the existing adapters in `src/providers/`. A new provider needs: an
+Look at the existing adapters in `src/providers/`. A new provider needs: an
 adapter, a content script, a host permission, a registry entry, a backup Markdown renderer, unit tests with a fake
 `fetch`, and an e2e test against a mocked origin.
 
